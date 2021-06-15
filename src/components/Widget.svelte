@@ -1,28 +1,87 @@
 <script lang="ts">
+	import { browser } from '$app/env';
+	import { onMount } from 'svelte';
+	import '../lib/ejs.min.js';
 	import type { WidgetConfig } from '../types';
+
+	// ejs is importated as global variable
+	// @ts-ignore
+	let render = ejs.render;
 
 	export let config: WidgetConfig;
 
+	$: updateInterval = 1000 * config.update_interval || 1000 * 60 * 15;
+
+	let data = {};
+	if (config.data) {
+		data = { ...config.data };
+	}
+
+	let interval = null;
+	$: if (config.url) {
+		updateData();
+		interval = setInterval(() => {
+			updateData();
+		}, updateInterval);
+	}
+
+	onMount(() => {
+		return () => {
+			if (interval) clearInterval(interval);
+		};
+	});
+
+	async function updateData() {
+		let options = {};
+		if (config.authToken) {
+			options = {
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: 'Bearer ' + config.authToken
+				}
+			};
+		}
+		try {
+			let res;
+			if (browser) {
+				// fetch through proxy to prevent cors issues, when in browser
+				res = await fetch(`/proxy.json?url=${encodeURIComponent(config.url)}`, options);
+			} else {
+				// on server we can fetch directly
+				res = await fetch(config.url, options);
+			}
+			const updatedData = (await res.json()).data;
+			if (updatedData) {
+				data = { ...data, ...updatedData };
+			}
+		} catch (e) {
+			console.log(e);
+		}
+	}
+
+	/**
+	 * NOTE: this will render javascript as is (ejs engine)
+	 * do we want to allow users to input their own?
+	 */
 	function renderTemplate(template: string, data: { [key: string]: any }): string {
 		if (!template) return '';
-		const variables = template.match(/{[^}]+}/g);
-		let rendered = template;
-		if (variables && variables.length > 0)
-			variables.forEach((varString) => {
-				const variable = varString.replace('{', '').replace('}', '');
-				rendered = rendered.replace(varString, data[variable] || '');
-			});
-		return rendered;
+		try {
+			return render(template, data);
+		} catch (e) {
+			// console.log(e);
+			return '';
+		}
 	}
 </script>
 
 <div class="wrapper">
 	<div class="icon">
-		<i class={renderTemplate(config.icon_template, config.testData)} />
+		<i class={renderTemplate(config.icon_template, data)} />
 	</div>
 	<div class="content">
-		<div class="text primary">{renderTemplate(config.primary_template, config.testData)}</div>
-		<div class="text secondary">{renderTemplate(config.secondary_template, config.testData)}</div>
+		<div class="text primary">{renderTemplate(config.primary_template, data)}</div>
+		<div class="text secondary">{renderTemplate(config.secondary_template, data)}</div>
 	</div>
 </div>
 
@@ -34,7 +93,7 @@
 		width: 17em;
 		min-height: 6em;
 		display: flex;
-		margin: 17px 0;
+		margin: 0 23px 23px 0;
 		@media (max-width: 768px) {
 			width: 100%;
 		}
@@ -53,7 +112,7 @@
 			flex-direction: column;
 			justify-content: center;
 			.primary {
-				font-size: 1.3em;
+				font-size: 1.2em;
 			}
 			.secondary {
 				font-size: 0.9em;

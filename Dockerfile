@@ -5,5 +5,4 @@ RUN yarn install
 COPY . ./
 RUN yarn run build
 
-FROM nginx:alpine
-COPY --from=appbuild /usr/src/app/build /usr/share/nginx/html
+CMD [ "node", "build" ]

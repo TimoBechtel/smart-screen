@@ -12,25 +12,27 @@
 
 	const widgets: WidgetConfig[] = [
 		{
-			icon_template: 'fas fa-sun',
-			primary_template: '{deg}°C, Cologne',
-			testData: { deg: 27 }
+			icon_template: 'fas fa-<% if (condition === "sunny") { %>sun<% } else { %>cloud<% } %>',
+			primary_template: '<%= temperature %> <%= location %>',
+			secondary_template: '<%= description %>',
+			data: { condition: 'rainy', location: 'Cologne' },
+			url: 'https://goweather.herokuapp.com/weather/Cologne',
+			update_interval: 60
 		},
 		{
 			icon_template: 'fas fa-train',
-			primary_template: 'in {minutes} Minuten',
-			secondary_template: 'nach Hause mit {train}',
-			testData: { minutes: 25, train: 'S4' }
+			primary_template:
+				'<%= events[0].departure.estimate %> Uhr - Linie <%= events[0].line.number %>, <%= events[0].line.direction %>',
+			secondary_template: 'Haltestellte Keupstraße',
+			update_interval: 5,
+			url:
+				'https://www.vrs.de/index.php?eID=tx_vrsinfo_ass2_departuremonitor&i=d2a97d0106d4c806809ff4ecc00d8a47'
 		},
 		{
-			icon_template: 'fas fa-mug-hot',
-			primary_template: '{status}',
-			testData: { status: 'warm' }
-		},
-		{
-			icon_template: 'fas fa-wine-bottle',
-			primary_template: 'Mate heute: {count} Flaschen',
-			testData: { count: 20 }
+			icon_template: 'fab fa-btc',
+			primary_template: '$<%= Math.round(data.priceUsd) %>',
+			secondary_template: 'Bitcoin Kurs',
+			url: 'https://api.coincap.io/v2/assets/bitcoin'
 		}
 	];
 </script>
@@ -57,7 +59,8 @@
 		padding: 30px 50px;
 		background: url('/background.jpg');
 		background-size: cover;
-		height: 100vh;
+		background-attachment: fixed;
+		min-height: 100vh;
 	}
 	.widget-container {
 		margin-top: 20px;
@@ -65,6 +68,13 @@
 		justify-content: space-between;
 		@media (max-width: 768px) {
 			flex-direction: column;
+		}
+		.left-widgets {
+			@media (min-width: 768px) {
+				display: flex;
+				max-height: 80vh;
+				flex-flow: column wrap;
+			}
 		}
 	}
 </style>

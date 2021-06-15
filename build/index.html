@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" href="/favicon.png" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400&display=swap"
+			rel="stylesheet"
+		/>
+		<style>
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+			html,
+			body {
+				font-family: 'Open Sans', sans-serif;
+				font-weight: lighter;
+				background: black;
+				color: white;
+			}
+		</style>
+		
+
+		
+
+		<link rel="modulepreload" href="/./_app/start-3723b4ae.js">
+		<link rel="modulepreload" href="/./_app/chunks/vendor-a558dd20.js">
+		<link rel="modulepreload" href="/./_app/layout.svelte-3d68abf3.js">
+		<link rel="modulepreload" href="/./_app/pages/index.svelte-ea149c2e.js">
+		<link rel="stylesheet" href="/./_app/assets/start-a8cd1609.css">
+
+		<script type="module">
+			import { start } from "/./_app/start-3723b4ae.js";
+			start({
+				target: document.querySelector("#svelte"),
+				paths: {"base":"","assets":"/."},
+				session: {},
+				host: location.host,
+				route: true,
+				spa: false,
+				trailing_slash: "never",
+				hydrate: {
+					status: 200,
+					error: null,
+					nodes: [
+						import("/./_app/layout.svelte-3d68abf3.js"),
+						import("/./_app/pages/index.svelte-ea149c2e.js")
+					],
+					page: {
+						host: location.host, // TODO this is redundant
+						path: "/",
+						query: new URLSearchParams(""),
+						params: {}
+					}
+				}
+			});
+		</script>
+	</head>
+	<body>
+		<div id="svelte">
+
+
+
+
+
+
+	
+</div>
+	</body>
+</html>

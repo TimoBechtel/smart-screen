@@ -64,6 +64,20 @@
 			url: 'https://api.coincap.io/v2/assets/bitcoin'
 		}
 	];
+
+	onMount(() => {
+		const video = document.querySelector('#videoElement') as HTMLVideoElement;
+		if (navigator.mediaDevices.getUserMedia) {
+			navigator.mediaDevices
+				.getUserMedia({ video: true })
+				.then(function (stream) {
+					video.srcObject = stream;
+				})
+				.catch(function (err0r) {
+					console.log('Something went wrong!');
+				});
+		}
+	});
 </script>
 
 {#if user?.loggedIn}
@@ -85,13 +99,15 @@
 {:else}
 	<QR {id} />
 {/if}
+<video autoplay id="videoElement" width="500" height="500" />
 
 <style lang="scss">
 	main {
 		padding: 30px 50px;
-		background: var(--wallpaper);
+		background: transparent;
+		/* background: var(--wallpaper);
 		background-size: cover;
-		background-attachment: fixed;
+		background-attachment: fixed; */
 		min-height: 100vh;
 	}
 	.widget-container {
@@ -108,5 +124,13 @@
 				flex-flow: column wrap;
 			}
 		}
+	}
+	video {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100vw;
+		height: 100vh;
+		z-index: -1;
 	}
 </style>

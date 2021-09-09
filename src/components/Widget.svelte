@@ -2,9 +2,9 @@
 	import { browser } from '$app/env';
 	import { onMount } from 'svelte';
 	import '../lib/ejs.min.js';
-	import type { WidgetConfig } from '../types';
+	import type { WidgetConfig } from '../widget';
 
-	// ejs is importated as global variable
+	// ejs is imported as global variable
 	// @ts-ignore
 	let render = ejs.render;
 
@@ -62,7 +62,8 @@
 
 	/**
 	 * NOTE: this will render javascript as is (ejs engine)
-	 * do we want to allow users to input their own?
+	 * do we want to allow users to input their own? -> security risk
+	 * Maybe we can render this in an iframe for sandboxing?
 	 */
 	function renderTemplate(template: string, data: { [key: string]: any }): string {
 		if (!template) return '';

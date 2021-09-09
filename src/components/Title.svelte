@@ -1,8 +1,4 @@
-<script lang="ts">
-	export let name: string;
-</script>
-
-<h1>Willkommen, {name}.</h1>
+<h1><slot /></h1>
 
 <style lang="scss">
 	h1 {

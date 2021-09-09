@@ -3,13 +3,13 @@
 	import type { LoadInput, LoadOutput } from '@sveltejs/kit';
 	import type { ChainReference } from 'socketdb';
 	import { onMount } from 'svelte';
-	import Events from '../../components/Events.svelte';
 	import QR from '../../components/QR.svelte';
-	import WelcomeTitle from '../../components/WelcomeTitle.svelte';
+	import WelcomeTitle from '../../components/Title.svelte';
 	import Widget from '../../components/Widget.svelte';
-	import type { WidgetConfig } from '../../types';
+	import type { ScreenConfiguration } from '../../screen';
 
 	export async function load({ page }: LoadInput): Promise<LoadOutput> {
+		// get the id of the screen (from the url)
 		const id = page.params['id'];
 		return {
 			status: 200,
@@ -19,77 +19,74 @@
 </script>
 
 <script lang="ts">
+	/**
+	 * A single Screen / Dashboard
+	 * Config is loaded through using the id of the screen
+	 *
+	 * url: /[id]/dashboard
+	 */
+
 	export let id: string;
 
 	let store: ChainReference;
 
-	let user: { name: string; loggedIn: boolean; wallpaper?: string } = {
-		name: 'Anonymer Gnu',
-		loggedIn: false,
-		wallpaper: '/background.jpg'
+	// initial configuration
+	let screen: ScreenConfiguration = {
+		name: 'My Screen',
+		background: {
+			color: 'teal'
+		},
+		scenes: {
+			'1': {
+				name: 'My Scene 1',
+				widgets: []
+			},
+			'2': {
+				name: 'My Scene 2',
+				widgets: []
+			},
+			'3': {
+				name: 'My Scene 3',
+				widgets: []
+			}
+		}
 	};
 
 	onMount(async () => {
+		// we need to dynamically load this module on mount, because we cannot load it on the server side
 		const { SocketDBClient } = await import('socketdb/browser');
 		const db = SocketDBClient({ url: `ws://localhost:8080` });
 		store = db.get(id);
-		return store.on((data) => {
-			if (data && user) user = { ...user, ...data };
-			else if (data) user = data;
+		return store.on((data: Partial<ScreenConfiguration>) => {
+			if (data) {
+				screen = { ...screen, ...data };
+			} else {
+				store.set(screen);
+			}
 		});
 	});
-
-	const widgets: WidgetConfig[] = [
-		{
-			icon_template: 'fas fa-<% if (condition === "sunny") { %>sun<% } else { %>cloud<% } %>',
-			primary_template: '<%= temperature %> <%= location %>',
-			secondary_template: '<%= description %>',
-			data: { condition: 'rainy', location: 'Cologne' },
-			url: 'https://goweather.herokuapp.com/weather/Cologne',
-			update_interval: 60
-		},
-		{
-			icon_template: 'fas fa-train',
-			primary_template:
-				'<%= events[0].departure.estimate %> Uhr - Linie <%= events[0].line.number %>, <%= events[0].line.direction %>',
-			secondary_template: 'Haltestellte Keupstraße',
-			update_interval: 5,
-			url:
-				'https://www.vrs.de/index.php?eID=tx_vrsinfo_ass2_departuremonitor&i=d2a97d0106d4c806809ff4ecc00d8a47'
-		},
-		{
-			icon_template: 'fab fa-btc',
-			primary_template: '$<%= Math.round(data.priceUsd) %>',
-			secondary_template: 'Bitcoin Kurs',
-			url: 'https://api.coincap.io/v2/assets/bitcoin'
-		}
-	];
 </script>
 
-{#if user?.loggedIn}
-	<main style={`--wallpaper: url('${user.wallpaper}')`}>
-		<WelcomeTitle name={user.name} />
-		<div class="widget-container">
-			<div class="left-widgets">
-				{#each widgets as widget}
-					<Widget config={widget} />
-				{/each}
-			</div>
-			<div class="right-widgets">
-				<Events />
-			</div>
+<main
+	style={`--wallpaper: url('${screen.background.imageSrc}'); --background-color: ${screen.background.color}`}
+>
+	<WelcomeTitle>{screen.name} - {screen.scenes[1].name}</WelcomeTitle>
+	<div class="widget-container">
+		<div class="left-widgets">
+			{#each screen?.scenes?.['1']?.widgets as widget}
+				<Widget config={widget} />
+			{/each}
 		</div>
+	</div>
 
-		Session ID: {id}
-	</main>
-{:else}
 	<QR {id} />
-{/if}
+</main>
 
 <style lang="scss">
 	main {
 		padding: 30px 50px;
-		background: var(--wallpaper);
+		background-color: var(--background-color);
+		background-image: var(--wallpaper);
 		background-size: cover;
 		background-attachment: fixed;
 		min-height: 100vh;

@@ -7,7 +7,7 @@ export async function get({ headers, query }: Request) {
 	const url = query.get('url');
 	if (!url) {
 		return {
-			status: 401
+			status: 400
 		};
 	}
 	let options = {};
@@ -34,4 +34,7 @@ export async function get({ headers, query }: Request) {
 			status: 200
 		};
 	}
+	return {
+		status: 502
+	};
 }

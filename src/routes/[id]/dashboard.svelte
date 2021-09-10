@@ -67,6 +67,7 @@
 </script>
 
 <main
+	class:has-wallpaper={screen.background.imageSrc}
 	style={`--wallpaper: url('${screen.background.imageSrc}'); --background-color: ${screen.background.color}`}
 >
 	<h1>{screen.name} - {screen.scenes[1].name}</h1>
@@ -86,9 +87,12 @@
 <style lang="scss">
 	main {
 		padding: 30px 50px;
-		// background image with color overlay
-		background: linear-gradient(0deg, rgba(25, 3, 49, 0.3), rgba(25, 3, 49, 0.3)), var(--wallpaper);
-		background-color: var(--background-color);
+		&.has-wallpaper {
+			// background image with color overlay
+			background: linear-gradient(0deg, rgba(25, 3, 49, 0.3), rgba(25, 3, 49, 0.3)),
+				var(--wallpaper);
+		}
+		background-color: var(--background-color, teal);
 		background-size: cover;
 		background-attachment: fixed;
 		background-position: center;

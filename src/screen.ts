@@ -2,22 +2,18 @@ import type { WidgetConfig } from './widget';
 
 export type ScreenConfiguration = {
 	name: string;
+	scenes: {
+		1: Scene;
+		2: Scene;
+		3: Scene;
+	};
+};
+
+type Scene = {
+	name: string;
+	widgets: WidgetConfig[];
 	background: {
 		color: string;
 		imageSrc?: string;
-	};
-	scenes: {
-		1: {
-			name: string;
-			widgets: WidgetConfig[];
-		};
-		2: {
-			name: string;
-			widgets: WidgetConfig[];
-		};
-		3: {
-			name: string;
-			widgets: WidgetConfig[];
-		};
 	};
 };

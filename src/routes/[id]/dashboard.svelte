@@ -32,21 +32,27 @@
 	// initial configuration
 	let screen: ScreenConfiguration = {
 		name: 'My Screen',
-		background: {
-			color: 'teal'
-		},
 		scenes: {
 			'1': {
 				name: 'My Scene 1',
-				widgets: []
+				widgets: [],
+				background: {
+					color: 'darkslategrey'
+				}
 			},
 			'2': {
 				name: 'My Scene 2',
-				widgets: []
+				widgets: [],
+				background: {
+					color: 'peru'
+				}
 			},
 			'3': {
 				name: 'My Scene 3',
-				widgets: []
+				widgets: [],
+				background: {
+					color: 'darkslateblue'
+				}
 			}
 		}
 	};
@@ -93,8 +99,8 @@
 </script>
 
 <main
-	class:has-wallpaper={screen.background.imageSrc}
-	style={`--wallpaper: url('${screen.background.imageSrc}'); --background-color: ${screen.background.color}`}
+	class:has-wallpaper={screen.scenes[currentScene]?.background?.imageSrc}
+	style={`--wallpaper: url('${screen.scenes[currentScene]?.background?.imageSrc}'); --background-color: ${screen.scenes[currentScene]?.background?.color}`}
 >
 	<h1>{screen.name} - {screen.scenes[currentScene]?.name}</h1>
 	<div class="widget-container">

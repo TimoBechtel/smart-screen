@@ -75,6 +75,13 @@
 		return text.split(separator);
 	}
 
+	function capLength(text: string, maxLength: number): string {
+		if (text.length > maxLength) {
+			return text.substring(0, maxLength) + '...';
+		}
+		return text;
+	}
+
 	function dispatchAction() {
 		if (config.action?.type === 'webhook') {
 			publishData({
@@ -106,8 +113,10 @@
 			<i class={renderTemplate(config.icon_template, data) || defaultIcon} />
 		</div>
 		<div class="content">
-			<div class="text primary">{renderTemplate(config.primary_template, data)}</div>
-			<div class="text secondary">{renderTemplate(config.secondary_template, data)}</div>
+			<div class="text primary">{capLength(renderTemplate(config.primary_template, data), 20)}</div>
+			<div class="text secondary">
+				{capLength(renderTemplate(config.secondary_template, data), 30)}
+			</div>
 		</div>
 	</div>
 	<div class="body">
@@ -160,8 +169,8 @@
 		}
 
 		&.medium {
-			// 2x height of inner div + margin + 4x border (2x inner div)
-			height: calc(16rem + var(--margin) + 4px);
+			// 2x height of inner div + margin
+			height: calc(16rem + var(--margin));
 			.header {
 				padding: 2.5rem 0 1.5rem 0;
 			}

@@ -96,6 +96,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>{screen.name} - {screen.scenes[currentSceneIndex].name}</title>
+</svelte:head>
+
 <main
 	class:has-wallpaper={screen.scenes[currentSceneIndex]?.background?.imageSrc}
 	style={`--wallpaper: url('${screen.scenes[currentSceneIndex]?.background?.imageSrc}'); --background-color: ${screen.scenes[currentSceneIndex]?.background?.color}`}

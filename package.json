@@ -1,38 +1,38 @@
 {
-  "name": "~TODO~",
-  "version": "0.0.1",
-  "scripts": {
-    "dev": "svelte-kit dev",
-    "build": "svelte-kit build",
-    "preview": "svelte-kit preview",
-    "check": "svelte-check --tsconfig ./tsconfig.json",
-    "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
-    "lint": "prettier --check --plugin-search-dir=. .",
-    "format": "prettier --write --plugin-search-dir=. ."
-  },
-  "devDependencies": {
-    "@sveltejs/adapter-node": "^1.0.0-next.26",
-    "@sveltejs/kit": "next",
-    "prettier": "~2.2.1",
-    "prettier-plugin-svelte": "^2.2.0",
-    "svelte": "^3.34.0",
-    "svelte-check": "^2.0.0",
-    "svelte-preprocess": "^4.0.0",
-    "tslib": "^2.0.0",
-    "typescript": "^4.0.0"
-  },
-  "type": "module",
-  "dependencies": {
-    "@fortawesome/fontawesome-free": "^5.15.3",
-    "@sveltejs/adapter-static": "^1.0.0-next.13",
-    "@teachablemachine/image": "^0.8.5",
-    "@tensorflow/tfjs": "^3.9.0",
-    "@types/qrcode": "^1.4.1",
-    "@types/yaml": "^1.9.7",
-    "liquidjs": "^9.25.1",
-    "qrcode": "^1.4.4",
-    "sass": "^1.35.0",
-    "socketdb": "^3.7.2",
-    "yaml": "^1.10.2"
-  }
+	"name": "smart-screen",
+	"version": "0.0.1",
+	"license": "MIT",
+	"scripts": {
+		"dev": "svelte-kit dev",
+		"build": "svelte-kit build",
+		"preview": "svelte-kit preview",
+		"check": "svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
+		"lint": "prettier --check --plugin-search-dir=. .",
+		"format": "prettier --write --plugin-search-dir=. ."
+	},
+	"devDependencies": {
+		"@sveltejs/adapter-node": "^1.0.0-next.26",
+		"@sveltejs/kit": "next",
+		"prettier": "~2.2.1",
+		"prettier-plugin-svelte": "^2.2.0",
+		"svelte": "^3.34.0",
+		"svelte-check": "^2.0.0",
+		"svelte-preprocess": "^4.0.0",
+		"tslib": "^2.0.0",
+		"typescript": "^4.0.0"
+	},
+	"type": "module",
+	"dependencies": {
+		"@fortawesome/fontawesome-free": "^5.15.3",
+		"@sveltejs/adapter-static": "^1.0.0-next.13",
+		"@teachablemachine/image": "^0.8.5",
+		"@tensorflow/tfjs": "^3.9.0",
+		"@types/qrcode": "^1.4.1",
+		"liquidjs": "^9.25.1",
+		"qrcode": "^1.4.4",
+		"sass": "^1.35.0",
+		"socketdb": "^3.7.2",
+		"yaml": "^1.10.2"
+	}
 }

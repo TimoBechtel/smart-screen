@@ -3,8 +3,7 @@
 </button>
 
 <style lang="scss">
-	button,
-	a {
+	button {
 		padding: 15px 20px;
 		border: none;
 		border-radius: 7px;

@@ -64,7 +64,11 @@
 		screen.scenes[2].widgets = [exampleWidgets[2].config];
 		screen.scenes[0].background.color = 'black';
 		screen.scenes[0].background.imageSrc =
-			'https://source.unsplash.com/random/?wallpaper,dark?r=' + Math.random();
+			'https://source.unsplash.com/random/?dark,neon?r=' + Math.random();
+		screen.scenes[1].background.imageSrc =
+			'https://source.unsplash.com/random/?dark,cafe?r=' + Math.random();
+		screen.scenes[2].background.imageSrc =
+			'https://source.unsplash.com/random/?dark,plants?r=' + Math.random();
 		store.set(screen);
 	}
 	function removeExampleWidgets() {

@@ -33,6 +33,9 @@
 			padding: 5px 13px;
 			background: rgba(255, 255, 255, 0.1);
 			backdrop-filter: blur(5px);
+			&:hover {
+				background: rgba(255, 255, 255, 0.4);
+			}
 		}
 	}
 </style>

@@ -135,7 +135,9 @@
 			<div class="widget-container">
 				<div class="left-widgets">
 					{#each screen.scenes[currentSceneIndex]?.widgets as widget}
-						<Widget config={widget} />
+						<div transition:fade={{ duration: 250 }}>
+							<Widget config={widget} />
+						</div>
 					{/each}
 				</div>
 			</div>
@@ -160,12 +162,14 @@
 		background-color: var(--background-color, teal);
 		&.has-wallpaper {
 			// background image with color overlay
-			background: linear-gradient(0deg, rgba(25, 3, 49, 0.3), rgba(25, 3, 49, 0.3)),
+			background: linear-gradient(0deg, rgba(25, 3, 49, 0.5), rgba(25, 3, 49, 0.5)),
 				var(--wallpaper);
 			background-size: cover;
 			background-attachment: fixed;
 			background-position: center;
 		}
+
+		transition: background-color 0.5s ease;
 
 		min-height: 100vh;
 

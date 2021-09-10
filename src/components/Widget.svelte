@@ -1,13 +1,9 @@
 <script lang="ts">
 	import { browser } from '$app/env';
 	import { onMount } from 'svelte';
-	import '../lib/ejs.min.js';
+	import { renderTemplate } from '../templateRenderer';
 	import { request } from '../webRequest';
 	import type { WidgetConfig } from '../widget';
-
-	// ejs is imported as global variable
-	// @ts-ignore
-	let render = ejs.render;
 
 	const defaultIcon = 'fa fa-info-circle';
 
@@ -72,21 +68,6 @@
 			}
 		} catch (error) {
 			console.error(error);
-		}
-	}
-
-	/**
-	 * NOTE: this will render javascript as is (ejs engine)
-	 * do we want to allow users to input their own? -> security risk
-	 * Maybe we can render this in an iframe for sandboxing?
-	 */
-	function renderTemplate(template: string, data: { [key: string]: any }): string {
-		if (!template) return '';
-		try {
-			return render(template, data);
-		} catch (e) {
-			// console.log(e);
-			return '';
 		}
 	}
 

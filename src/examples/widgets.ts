@@ -9,9 +9,9 @@ export const exampleWidgets: ExampleWidget[] = [
 	{
 		name: 'Wetter',
 		config: {
-			icon_template: 'fas fa-<% if (condition === "sunny") { %>sun<% } else { %>cloud<% } %>',
-			primary_template: '<%= temperature %> <%= location %>',
-			secondary_template: '<%= description %>',
+			icon_template: 'fas fa-{% if condition == "sunny" %}sun{% else %}cloud{% endif %}',
+			primary_template: '{{ temperature }} {{ location }}',
+			secondary_template: '{{ description }}',
 			data: { condition: 'rainy', location: 'Cologne' },
 			source: {
 				type: 'polling',
@@ -41,12 +41,12 @@ export const exampleWidgets: ExampleWidget[] = [
 		name: 'VRS',
 		config: {
 			icon_template: 'fas fa-train',
-			primary_template: '<%= events[0].departure.estimate %> Uhr',
+			primary_template: '{{ events[0].departure.estimate }} Uhr',
 			secondary_template: 'Haltestellte: Keupstraße',
 			content: {
 				type: 'text',
 				payload_template:
-					'Nächste Abfahrt: \nLinie: <%= events[0].line.number %> \n Richtung: <%= events[0].line.direction %>'
+					'Nächste Abfahrt: \nLinie: {{ events[0].line.number }} \n Richtung: {{ events[0].line.direction }}'
 			},
 			source: {
 				type: 'polling',
@@ -60,7 +60,7 @@ export const exampleWidgets: ExampleWidget[] = [
 		name: 'Bitcoin',
 		config: {
 			icon_template: 'fab fa-btc',
-			primary_template: '$<%= Math.round(data.priceUsd) %>',
+			primary_template: '${{ data.priceUsd | round: 4 }}',
 			secondary_template: 'Bitcoin Kurs',
 			source: {
 				type: 'polling',

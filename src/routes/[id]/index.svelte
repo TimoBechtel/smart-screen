@@ -2,6 +2,7 @@
 	import type { LoadInput, LoadOutput } from '@sveltejs/kit';
 	import type { ChainReference } from 'socketdb/browser';
 	import { onMount } from 'svelte';
+	import yaml from 'yaml';
 	import Button from '../../components/Button.svelte';
 	import { exampleWidgets } from '../../examples/widgets';
 	import type { ScreenConfiguration } from '../../screen';
@@ -48,6 +49,14 @@
 		});
 	});
 
+	function parseConfiguration(yamlString: string): ScreenConfiguration {
+		return yaml.parse(yamlString);
+	}
+
+	function stringifyConfiguration(screen: ScreenConfiguration): string {
+		return yaml.stringify(screen);
+	}
+
 	// a few demo functions that just add/remove example widgets to the scene 1
 	function setExampleWidgets() {
 		screen.scenes[1].widgets = exampleWidgets.map((example) => example.config);
@@ -69,7 +78,7 @@
 		<h1>{screen.name}</h1>
 		<Button on:click={setExampleWidgets}>Add example widgets</Button>
 		<Button on:click={removeExampleWidgets}>Remove example widgets</Button>
-		<pre style="font-size: 0.7em;">{JSON.stringify(screen, undefined, 2)}</pre>
+		<pre style="font-size: 0.8em;">{stringifyConfiguration(screen)}</pre>
 	{:else}
 		<h1>Screen does not exist.</h1>
 	{/if}

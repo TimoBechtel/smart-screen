@@ -51,11 +51,15 @@
 		}
 	};
 
+	let currentScene: keyof ScreenConfiguration['scenes'] = 1;
+
 	onMount(async () => {
 		// we need to dynamically load this module on mount, because we cannot load it on the server side
 		const { SocketDBClient } = await import('socketdb/browser');
 		const db = SocketDBClient({ url: `ws://localhost:8080` });
 		store = db.get(id);
+
+		initKeyListener();
 
 		return store.on((data: Partial<ScreenConfiguration>) => {
 			if (data) {
@@ -65,16 +69,37 @@
 			}
 		});
 	});
+
+	function initKeyListener() {
+		window.addEventListener('keydown', (e) => {
+			if (e.key === 'ArrowLeft') {
+				currentScene = (currentScene - 1 < 1
+					? Object.keys(screen.scenes).length
+					: currentScene - 1) as keyof ScreenConfiguration['scenes'];
+			} else if (e.key === 'ArrowRight') {
+				currentScene = (currentScene + 1 > Object.keys(screen.scenes).length
+					? 1
+					: currentScene + 1) as keyof ScreenConfiguration['scenes'];
+			}
+			if (e.key === '1') {
+				currentScene = 1;
+			} else if (e.key === '2') {
+				currentScene = 2;
+			} else if (e.key === '3') {
+				currentScene = 3;
+			}
+		});
+	}
 </script>
 
 <main
 	class:has-wallpaper={screen.background.imageSrc}
 	style={`--wallpaper: url('${screen.background.imageSrc}'); --background-color: ${screen.background.color}`}
 >
-	<h1>{screen.name} - {screen.scenes[1].name}</h1>
+	<h1>{screen.name} - {screen.scenes[currentScene]?.name}</h1>
 	<div class="widget-container">
 		<div class="left-widgets">
-			{#each screen?.scenes?.['1']?.widgets as widget}
+			{#each screen.scenes[currentScene]?.widgets as widget}
 				<Widget config={widget} />
 			{/each}
 		</div>

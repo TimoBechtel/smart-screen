@@ -51,6 +51,9 @@
 	// a few demo functions that just add/remove example widgets to the scene 1
 	function setExampleWidgets() {
 		screen.scenes[1].widgets = exampleWidgets.map((example) => example.config);
+		screen.background.color = 'black';
+		screen.background.imageSrc =
+			'https://source.unsplash.com/random/?wallpaper,dark?r=' + Math.random();
 		store.set(screen);
 	}
 	function removeExampleWidgets() {

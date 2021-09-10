@@ -11,4 +11,5 @@ export type WidgetConfig = {
 	secondary_template?: string;
 	// template for icons (font awesome)
 	icon_template: string;
+	size?: 'small' | 'medium';
 };

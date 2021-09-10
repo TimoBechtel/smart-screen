@@ -7,10 +7,11 @@
 		const payload = `${location.protocol}//${location.host}/${id}`;
 		QRCode.toCanvas(node, payload, {
 			color: {
-				light: '#000',
-				dark: '#c0ccee'
+				light: '#d8d8d8',
+				dark: '#000'
 			},
-			scale: 5
+			margin: 2,
+			scale: 4
 		});
 	}
 </script>
@@ -18,16 +19,3 @@
 <main>
 	<canvas use:qr />
 </main>
-
-<style lang="scss">
-	main {
-		/* height: 100vh;
-		width: 100vw; */
-		/* position: relative; */
-		canvas {
-			position: absolute;
-			bottom: 40px;
-			right: 40px;
-		}
-	}
-</style>

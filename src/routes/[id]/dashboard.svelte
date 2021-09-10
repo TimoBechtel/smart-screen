@@ -4,7 +4,6 @@
 	import type { ChainReference } from 'socketdb';
 	import { onMount } from 'svelte';
 	import QR from '../../components/QR.svelte';
-	import WelcomeTitle from '../../components/Title.svelte';
 	import Widget from '../../components/Widget.svelte';
 	import type { ScreenConfiguration } from '../../screen';
 
@@ -70,7 +69,7 @@
 <main
 	style={`--wallpaper: url('${screen.background.imageSrc}'); --background-color: ${screen.background.color}`}
 >
-	<WelcomeTitle>{screen.name} - {screen.scenes[1].name}</WelcomeTitle>
+	<h1>{screen.name} - {screen.scenes[1].name}</h1>
 	<div class="widget-container">
 		<div class="left-widgets">
 			{#each screen?.scenes?.['1']?.widgets as widget}
@@ -79,22 +78,39 @@
 		</div>
 	</div>
 
-	<QR {id} />
+	<div class="qr">
+		<QR {id} />
+	</div>
 </main>
 
 <style lang="scss">
 	main {
 		padding: 30px 50px;
+		// background image with color overlay
+		background: linear-gradient(0deg, rgba(25, 3, 49, 0.3), rgba(25, 3, 49, 0.3)), var(--wallpaper);
 		background-color: var(--background-color);
-		background-image: var(--wallpaper);
 		background-size: cover;
 		background-attachment: fixed;
+		background-position: center;
 		min-height: 100vh;
+
+		h1 {
+			font-size: 1em;
+			font-weight: normal;
+		}
+
+		.qr {
+			position: absolute;
+			right: 50px;
+			bottom: 50px;
+			@media (max-width: 768px) {
+				position: static;
+			}
+		}
 	}
 	.widget-container {
 		margin-top: 20px;
 		display: flex;
-		justify-content: space-between;
 		@media (max-width: 768px) {
 			flex-direction: column;
 		}

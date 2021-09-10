@@ -36,9 +36,10 @@
 		try {
 			const res = await request({ url, authToken, useProxy: browser });
 			if (res.status === 200) {
+				const raw = await res.clone().text();
 				const updatedData = (await res.json()).data;
 				if (updatedData) {
-					data = { ...data, ...updatedData };
+					data = { ...data, ...updatedData, _raw: raw };
 				}
 			} else {
 				console.error('error fetching data', res.status);

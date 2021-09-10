@@ -91,11 +91,11 @@
 			// background image with color overlay
 			background: linear-gradient(0deg, rgba(25, 3, 49, 0.3), rgba(25, 3, 49, 0.3)),
 				var(--wallpaper);
+			background-size: cover;
+			background-attachment: fixed;
+			background-position: center;
 		}
 		background-color: var(--background-color, teal);
-		background-size: cover;
-		background-attachment: fixed;
-		background-position: center;
 		min-height: 100vh;
 
 		h1 {

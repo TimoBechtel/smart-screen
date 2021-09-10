@@ -2,6 +2,7 @@
 	import { browser } from '$app/env';
 	import { onMount } from 'svelte';
 	import '../lib/ejs.min.js';
+	import { request } from '../webRequest';
 	import type { WidgetConfig } from '../widget';
 
 	// ejs is imported as global variable
@@ -36,33 +37,41 @@
 
 	async function fetchData({ url, authToken }: { url: string; authToken?: string }) {
 		if (!url) return;
-		let options = {};
-		if (authToken) {
-			options = {
-				method: 'GET',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: 'Bearer ' + authToken
-				}
-			};
-		}
 		try {
-			let res: Response;
-			if (browser) {
-				// fetch through proxy to prevent cors issues, when in browser
-				res = await fetch(`/proxy.json?url=${encodeURIComponent(url)}`, options);
-			} else {
-				// on server we can fetch directly
-				res = await fetch(url, options);
-			}
+			const res = await request({ url, authToken, useProxy: browser });
 			if (res.status === 200) {
 				const updatedData = (await res.json()).data;
 				if (updatedData) {
 					data = { ...data, ...updatedData };
 				}
+			} else {
+				console.error('error fetching data', res.status);
 			}
-		} catch (e) {
-			console.log(e);
+		} catch (error) {
+			console.error(error);
+		}
+	}
+
+	async function publishData({
+		url,
+		authToken,
+		method = 'POST',
+		payload
+	}: {
+		url: string;
+		method?: 'GET' | 'POST';
+		payload?: string;
+		// optional auth token, for fetching data from private resources
+		authToken?: string;
+	}) {
+		if (!url) return;
+		try {
+			const res = await request({ url, authToken, method, payload, useProxy: false });
+			if (res.status !== 200) {
+				console.error('error publishing data', res.status);
+			}
+		} catch (error) {
+			console.error(error);
 		}
 	}
 
@@ -84,9 +93,33 @@
 	function multiLine(text: string, separator = '\n'): string[] {
 		return text.split(separator);
 	}
+
+	function dispatchAction() {
+		if (config.action?.type === 'webhook') {
+			publishData({
+				url: config.action.url,
+				authToken: config.action.authToken,
+				method: config.action.method,
+				payload: renderTemplate(config.action.payload_template, data)
+			});
+			console.log('dispatching action', config.action.url);
+		} else {
+			console.warn('unknown action type', config.action?.type);
+		}
+	}
 </script>
 
-<div class="wrapper" class:medium={config.content} class:light={theme === 'light'}>
+<div
+	class="wrapper"
+	class:medium={config.content}
+	class:light={theme === 'light'}
+	tabindex={config.action ? 0 : null}
+	on:keydown={(e) => {
+		if (e.key === 'Enter') {
+			dispatchAction();
+		}
+	}}
+>
 	<div class="header">
 		<div class="icon">
 			<i class={renderTemplate(config.icon_template, data) || defaultIcon} />
@@ -124,6 +157,7 @@
 <style lang="scss">
 	.wrapper {
 		--margin: 20px;
+
 		&.light {
 			background: rgba(255, 255, 255, 0.1);
 			border: 2px solid rgba(255, 255, 255, 0.2);
@@ -137,6 +171,11 @@
 		padding: 0 7px;
 		@media (max-width: 768px) {
 			width: 100%;
+		}
+
+		outline: none;
+		&:focus {
+			border-color: rgba(255, 255, 255, 0.7);
 		}
 
 		&.medium {

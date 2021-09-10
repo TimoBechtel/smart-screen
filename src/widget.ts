@@ -19,4 +19,12 @@ export type WidgetConfig = {
 		type: 'text' | 'image' | 'iframe';
 		payload_template: string;
 	};
+	action?: {
+		type: 'webhook';
+		url: string;
+		method?: 'GET' | 'POST';
+		payload_template?: string;
+		// optional auth token, for fetching data from private resources
+		authToken?: string;
+	};
 };

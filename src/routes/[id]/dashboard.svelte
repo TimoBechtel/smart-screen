@@ -56,6 +56,7 @@
 		const { SocketDBClient } = await import('socketdb/browser');
 		const db = SocketDBClient({ url: `ws://localhost:8080` });
 		store = db.get(id);
+
 		return store.on((data: Partial<ScreenConfiguration>) => {
 			if (data) {
 				screen = { ...screen, ...data };

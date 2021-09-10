@@ -17,6 +17,11 @@ export const exampleWidgets: ExampleWidget[] = [
 				type: 'polling',
 				url: 'https://goweather.herokuapp.com/weather/Cologne',
 				interval: 3600
+			},
+			action: {
+				type: 'webhook',
+				url: 'my-url',
+				payload_template: ''
 			}
 		}
 	},

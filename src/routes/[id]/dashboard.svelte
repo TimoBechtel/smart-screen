@@ -5,6 +5,7 @@
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import QR from '../../components/QR.svelte';
+	import SceneIndicator from '../../components/SceneIndicator.svelte';
 	import Widget from '../../components/Widget.svelte';
 	import type { ScreenConfiguration } from '../../screen';
 
@@ -129,9 +130,7 @@
 		<div transition:fade>
 			<h1>
 				{screen.name}
-				<small style="opacity: 0.7">
-					- {screen.scenes[currentSceneIndex]?.name}
-				</small>
+				<SceneIndicator scenes={screen.scenes} bind:selected={currentSceneIndex} />
 			</h1>
 			<div class="widget-container">
 				<div class="left-widgets">
@@ -171,8 +170,8 @@
 		min-height: 100vh;
 
 		h1 {
-			font-size: 1em;
-			font-weight: normal;
+			font-size: 1.8rem;
+			font-weight: lighter;
 		}
 
 		.qr {

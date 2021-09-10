@@ -5,7 +5,7 @@ export type ScreenConfiguration = {
 	scenes: Scene[];
 };
 
-type Scene = {
+export type Scene = {
 	name: string;
 	widgets: WidgetConfig[];
 	background: {

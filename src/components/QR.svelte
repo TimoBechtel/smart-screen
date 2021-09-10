@@ -25,6 +25,9 @@
 	p {
 		margin: 5px 0;
 		font-size: 0.9rem;
-		color: rgba(255, 255, 255, 0.8);
+		color: rgba(255, 255, 255, 0.6);
+	}
+	canvas {
+		opacity: 0.6;
 	}
 </style>

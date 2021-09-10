@@ -32,32 +32,32 @@
 	// initial configuration
 	let screen: ScreenConfiguration = {
 		name: 'My Screen',
-		scenes: {
-			'1': {
+		scenes: [
+			{
 				name: 'My Scene 1',
 				widgets: [],
 				background: {
 					color: 'darkslategrey'
 				}
 			},
-			'2': {
+			{
 				name: 'My Scene 2',
 				widgets: [],
 				background: {
 					color: 'peru'
 				}
 			},
-			'3': {
+			{
 				name: 'My Scene 3',
 				widgets: [],
 				background: {
 					color: 'darkslateblue'
 				}
 			}
-		}
+		]
 	};
 
-	let currentScene: keyof ScreenConfiguration['scenes'] = 1;
+	let currentSceneIndex = 0;
 
 	onMount(async () => {
 		// we need to dynamically load this module on mount, because we cannot load it on the server side
@@ -78,34 +78,32 @@
 
 	function initKeyListener() {
 		window.addEventListener('keydown', (e) => {
+			// cycle through scenes with the arrow keys
 			if (e.key === 'ArrowLeft') {
-				currentScene = (currentScene - 1 < 1
-					? Object.keys(screen.scenes).length
-					: currentScene - 1) as keyof ScreenConfiguration['scenes'];
+				currentSceneIndex =
+					currentSceneIndex - 1 < 0 ? screen.scenes.length - 1 : currentSceneIndex - 1;
 			} else if (e.key === 'ArrowRight') {
-				currentScene = (currentScene + 1 > Object.keys(screen.scenes).length
-					? 1
-					: currentScene + 1) as keyof ScreenConfiguration['scenes'];
+				currentSceneIndex =
+					currentSceneIndex + 1 > screen.scenes.length - 1 ? 0 : currentSceneIndex + 1;
 			}
-			if (e.key === '1') {
-				currentScene = 1;
-			} else if (e.key === '2') {
-				currentScene = 2;
-			} else if (e.key === '3') {
-				currentScene = 3;
+
+			// select scene by using the number keys
+			if (e.key.length === 1 && e.key.match(/[0-9]/)) {
+				const selection = parseInt(e.key, 10) - 1;
+				if (screen.scenes[selection]) currentSceneIndex = selection;
 			}
 		});
 	}
 </script>
 
 <main
-	class:has-wallpaper={screen.scenes[currentScene]?.background?.imageSrc}
-	style={`--wallpaper: url('${screen.scenes[currentScene]?.background?.imageSrc}'); --background-color: ${screen.scenes[currentScene]?.background?.color}`}
+	class:has-wallpaper={screen.scenes[currentSceneIndex]?.background?.imageSrc}
+	style={`--wallpaper: url('${screen.scenes[currentSceneIndex]?.background?.imageSrc}'); --background-color: ${screen.scenes[currentSceneIndex]?.background?.color}`}
 >
-	<h1>{screen.name} - {screen.scenes[currentScene]?.name}</h1>
+	<h1>{screen.name} - {screen.scenes[currentSceneIndex]?.name}</h1>
 	<div class="widget-container">
 		<div class="left-widgets">
-			{#each screen.scenes[currentScene]?.widgets as widget}
+			{#each screen.scenes[currentSceneIndex]?.widgets as widget}
 				<Widget config={widget} />
 			{/each}
 		</div>

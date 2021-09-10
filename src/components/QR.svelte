@@ -17,5 +17,14 @@
 </script>
 
 <main>
+	<p>Konfigurieren:</p>
 	<canvas use:qr />
 </main>
+
+<style>
+	p {
+		margin: 5px 0;
+		font-size: 0.9rem;
+		color: rgba(255, 255, 255, 0.8);
+	}
+</style>

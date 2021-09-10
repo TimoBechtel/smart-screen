@@ -3,6 +3,7 @@
 	import type { LoadInput, LoadOutput } from '@sveltejs/kit';
 	import type { ChainReference } from 'socketdb';
 	import { onMount } from 'svelte';
+	import { fade } from 'svelte/transition';
 	import QR from '../../components/QR.svelte';
 	import Widget from '../../components/Widget.svelte';
 	import type { ScreenConfiguration } from '../../screen';
@@ -59,6 +60,17 @@
 
 	let currentSceneIndex = 0;
 
+	let screensaver = false;
+	let time = new Date();
+	let clockTimer = null;
+	$: if (screensaver) {
+		clockTimer = setInterval(() => {
+			time = new Date();
+		}, 1000 * 30);
+	} else {
+		clearInterval(clockTimer);
+	}
+
 	onMount(async () => {
 		// we need to dynamically load this module on mount, because we cannot load it on the server side
 		const { SocketDBClient } = await import('socketdb/browser');
@@ -67,13 +79,18 @@
 
 		initKeyListener();
 
-		return store.on((data: Partial<ScreenConfiguration>) => {
+		const unsubscribe = store.on((data: Partial<ScreenConfiguration>) => {
 			if (data) {
 				screen = { ...screen, ...data };
 			} else {
 				store.set(screen);
 			}
 		});
+
+		return () => {
+			unsubscribe();
+			clearInterval(clockTimer);
+		};
 	});
 
 	function initKeyListener() {
@@ -92,6 +109,10 @@
 				const selection = parseInt(e.key, 10) - 1;
 				if (screen.scenes[selection]) currentSceneIndex = selection;
 			}
+
+			if (e.key === 's') {
+				screensaver = !screensaver;
+			}
 		});
 	}
 </script>
@@ -104,23 +125,40 @@
 	class:has-wallpaper={screen.scenes[currentSceneIndex]?.background?.imageSrc}
 	style={`--wallpaper: url('${screen.scenes[currentSceneIndex]?.background?.imageSrc}'); --background-color: ${screen.scenes[currentSceneIndex]?.background?.color}`}
 >
-	<h1>{screen.name} - {screen.scenes[currentSceneIndex]?.name}</h1>
-	<div class="widget-container">
-		<div class="left-widgets">
-			{#each screen.scenes[currentSceneIndex]?.widgets as widget}
-				<Widget config={widget} />
-			{/each}
-		</div>
-	</div>
+	{#if !screensaver}
+		<div transition:fade>
+			<h1>
+				{screen.name}
+				<small style="opacity: 0.7">
+					- {screen.scenes[currentSceneIndex]?.name}
+				</small>
+			</h1>
+			<div class="widget-container">
+				<div class="left-widgets">
+					{#each screen.scenes[currentSceneIndex]?.widgets as widget}
+						<Widget config={widget} />
+					{/each}
+				</div>
+			</div>
 
-	<div class="qr">
-		<QR {id} />
-	</div>
+			<div class="qr">
+				<QR {id} />
+			</div>
+		</div>
+	{:else}
+		<div class="screensaver" transition:fade>
+			{time.toLocaleTimeString(undefined, {
+				timeStyle: 'short'
+			})}
+		</div>
+	{/if}
 </main>
 
 <style lang="scss">
 	main {
 		padding: 30px 50px;
+
+		background-color: var(--background-color, teal);
 		&.has-wallpaper {
 			// background image with color overlay
 			background: linear-gradient(0deg, rgba(25, 3, 49, 0.3), rgba(25, 3, 49, 0.3)),
@@ -129,7 +167,7 @@
 			background-attachment: fixed;
 			background-position: center;
 		}
-		background-color: var(--background-color, teal);
+
 		min-height: 100vh;
 
 		h1 {
@@ -144,6 +182,21 @@
 			@media (max-width: 768px) {
 				position: static;
 			}
+		}
+
+		.screensaver {
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 9rem;
+			font-weight: bold;
+			color: rgba(255, 255, 255, 0.5);
+			backdrop-filter: blur(35px);
 		}
 	}
 	.widget-container {

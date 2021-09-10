@@ -25,6 +25,8 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.3",
     "@sveltejs/adapter-static": "^1.0.0-next.13",
+    "@teachablemachine/image": "^0.8.5",
+    "@tensorflow/tfjs": "^3.9.0",
     "@types/qrcode": "^1.4.1",
     "@types/yaml": "^1.9.7",
     "liquidjs": "^9.25.1",

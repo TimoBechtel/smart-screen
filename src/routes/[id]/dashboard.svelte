@@ -4,6 +4,7 @@
 	import type { ChainReference } from 'socketdb';
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
+	import { AttentionDetector } from '../../attentionDetector';
 	import QR from '../../components/QR.svelte';
 	import SceneIndicator from '../../components/SceneIndicator.svelte';
 	import Widget from '../../components/Widget.svelte';
@@ -61,7 +62,7 @@
 
 	let currentSceneIndex = 0;
 
-	let screensaver = false;
+	let screensaver = true;
 	let time = new Date();
 	let clockTimer = null;
 	$: if (screensaver) {
@@ -72,13 +73,19 @@
 		clearInterval(clockTimer);
 	}
 
+	let attentionDetector = new AttentionDetector();
+	attentionDetector.on('detected', () => {
+		screensaver = false;
+	});
+	attentionDetector.on('lost', () => {
+		screensaver = true;
+	});
+
 	onMount(async () => {
 		// we need to dynamically load this module on mount, because we cannot load it on the server side
 		const { SocketDBClient } = await import('socketdb/browser');
 		const db = SocketDBClient({ url: `ws://localhost:8080` });
 		store = db.get(id);
-
-		initKeyListener();
 
 		const unsubscribe = store.on((data: Partial<ScreenConfiguration>) => {
 			if (data) {
@@ -88,39 +95,43 @@
 			}
 		});
 
+		const stopAttentionDetector = await attentionDetector.listen();
+
 		return () => {
 			unsubscribe();
+			stopAttentionDetector();
 			clearInterval(clockTimer);
 		};
 	});
 
-	function initKeyListener() {
-		window.addEventListener('keydown', (e) => {
-			// cycle through scenes with the arrow keys
-			if (e.key === 'ArrowLeft') {
-				currentSceneIndex =
-					currentSceneIndex - 1 < 0 ? screen.scenes.length - 1 : currentSceneIndex - 1;
-			} else if (e.key === 'ArrowRight') {
-				currentSceneIndex =
-					currentSceneIndex + 1 > screen.scenes.length - 1 ? 0 : currentSceneIndex + 1;
-			}
+	function onKeyDown(e: KeyboardEvent) {
+		if (screensaver) {
+			screensaver = false;
+			return;
+		}
 
-			// select scene by using the number keys
-			if (e.key.length === 1 && e.key.match(/[0-9]/)) {
-				const selection = parseInt(e.key, 10) - 1;
-				if (screen.scenes[selection]) currentSceneIndex = selection;
-			}
+		// cycle through scenes with the arrow keys
+		if (e.key === 'ArrowLeft') {
+			currentSceneIndex =
+				currentSceneIndex - 1 < 0 ? screen.scenes.length - 1 : currentSceneIndex - 1;
+		} else if (e.key === 'ArrowRight') {
+			currentSceneIndex =
+				currentSceneIndex + 1 > screen.scenes.length - 1 ? 0 : currentSceneIndex + 1;
+		}
 
-			if (e.key === 's') {
-				screensaver = !screensaver;
-			}
-		});
+		// select scene by using the number keys
+		if (e.key.length === 1 && e.key.match(/[0-9]/)) {
+			const selection = parseInt(e.key, 10) - 1;
+			if (screen.scenes[selection]) currentSceneIndex = selection;
+		}
 	}
 </script>
 
 <svelte:head>
 	<title>{screen.name} - {screen.scenes[currentSceneIndex].name}</title>
 </svelte:head>
+
+<svelte:window on:keydown={onKeyDown} />
 
 <main
 	class:has-wallpaper={screen.scenes[currentSceneIndex]?.background?.imageSrc}

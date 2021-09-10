@@ -13,10 +13,10 @@ export type WidgetConfig = {
 	primary_template: string;
 	secondary_template?: string;
 	// template for icons (font awesome)
-	icon_template: string;
+	icon_template?: string;
 	// content for a widget
 	content?: {
-		type: 'text';
+		type: 'text' | 'image' | 'iframe';
 		payload_template: string;
 	};
 };

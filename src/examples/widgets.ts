@@ -21,6 +21,18 @@ export const exampleWidgets: ExampleWidget[] = [
 		}
 	},
 	{
+		name: 'Bild',
+		config: {
+			icon_template: 'fas fa-camera',
+			primary_template: 'Ein Bild',
+			content: {
+				type: 'image',
+				payload_template:
+					'https://images.unsplash.com/photo-1563089145-599997674d42?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80'
+			}
+		}
+	},
+	{
 		name: 'VRS',
 		config: {
 			icon_template: 'fas fa-train',

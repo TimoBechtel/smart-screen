@@ -8,6 +8,8 @@
 	// @ts-ignore
 	let render = ejs.render;
 
+	const defaultIcon = 'fa fa-info-circle';
+
 	export let config: WidgetConfig;
 	export let theme: 'light' | 'dark' = 'dark';
 
@@ -87,7 +89,7 @@
 <div class="wrapper" class:medium={config.content} class:light={theme === 'light'}>
 	<div class="header">
 		<div class="icon">
-			<i class={renderTemplate(config.icon_template, data)} />
+			<i class={renderTemplate(config.icon_template, data) || defaultIcon} />
 		</div>
 		<div class="content">
 			<div class="text primary">{renderTemplate(config.primary_template, data)}</div>
@@ -100,6 +102,20 @@
 				{#each multiLine(renderTemplate(config.content.payload_template, data)) as line}
 					<p>{line}</p>
 				{/each}
+			</div>
+		{:else if config.content?.type === 'image'}
+			<div class="media">
+				<img src={renderTemplate(config.content.payload_template, data)} alt="" />
+			</div>
+		{:else if config.content?.type === 'iframe'}
+			<div class="media">
+				<iframe
+					frameBorder="0"
+					allowtransparency
+					allow="encrypted-media"
+					src={renderTemplate(config.content.payload_template, data)}
+					title=""
+				/>
 			</div>
 		{/if}
 	</div>
@@ -115,7 +131,7 @@
 		background: rgba(43, 32, 61, 0.2);
 		border: 1px solid rgba(255, 255, 255, 0.2);
 		width: 21em;
-		/* min-height: 8em; */
+		height: 8em;
 		margin: 0 var(--margin) var(--margin) 0;
 		backdrop-filter: blur(25px);
 		padding: 0 7px;
@@ -125,7 +141,7 @@
 
 		&.medium {
 			// 2x height of inner div + margin + 4x border (2x inner div)
-			min-height: calc(14rem + var(--margin) + 4px);
+			height: calc(16rem + var(--margin) + 4px);
 			.header {
 				padding: 2.5rem 0 1.5rem 0;
 			}
@@ -147,6 +163,20 @@
 
 		.body {
 			margin: 0 25px 0 25px;
+			.media {
+				img {
+					display: block;
+					width: 100%;
+					max-height: 10rem;
+					object-fit: cover;
+					border: 1px solid rgba(255, 255, 255, 0.2);
+				}
+				iframe {
+					width: 100%;
+					height: 10rem;
+					border: 1px solid rgba(255, 255, 255, 0.2);
+				}
+			}
 		}
 		.primary {
 			font-size: 1.12em;

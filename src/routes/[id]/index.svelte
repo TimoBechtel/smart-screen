@@ -40,7 +40,7 @@
 		const db = SocketDBClient({ url: `ws://localhost:8080` });
 		store = db.get(id);
 
-		store.on((data: Partial<ScreenConfiguration>) => {
+		return store.on((data: Partial<ScreenConfiguration>) => {
 			// merge changes from the server with the local state whenever someone updates it
 			if (data) {
 				screen = { ...screen, ...data };

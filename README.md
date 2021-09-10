@@ -181,6 +181,8 @@ icon_template: fas fa-{% if condition == "sunny" %}sun{% else %}cloud{% endif %}
     interval: 3600
 ```
 
+See: [src/examples/widgets.ts](https://github.com/TimoBechtel/smart-screen/blob/main/src/examples/widgets.ts) for more examples.
+
 ## Development
 
 Once you've installed all dependencies with `yarn`, start a development server:

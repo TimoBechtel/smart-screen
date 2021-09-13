@@ -28,12 +28,15 @@
 	 * as we do not need the id to be apparent in the url
 	 */
 
+
 	export let id: string;
 
 	// socketdb store, for synchonizing the screen configuration with the server
 	let store: ChainReference = null;
 
 	let screen: ScreenConfiguration = null;
+
+	let configWindow;
 
 	onMount(async () => {
 		// we need to dynamically load this module on mount, because we cannot load it on the server side
@@ -69,20 +72,27 @@
 			'https://source.unsplash.com/random/?dark,cafe?r=' + Math.random();
 		screen.scenes[2].background.imageSrc =
 			'https://source.unsplash.com/random/?dark,plants?r=' + Math.random();
+		configWindow.value = stringifyConfiguration(screen)
 		store.set(screen);
 	}
 	function removeExampleWidgets() {
 		screen.scenes[0].widgets = [];
+		configWindow.value = stringifyConfiguration(screen)
 		store.set(screen);
 	}
 </script>
 
 <main>
 	{#if screen}
-		<h1>{screen.name}</h1>
+		<h1>Configure {screen.name}</h1>
+		<select>
+			{#each exampleWidgets as example}
+				<option value={example.name}>{example.name}</option>
+			{/each}
+		</select>
 		<Button on:click={setExampleWidgets}>Add example widgets</Button>
 		<Button on:click={removeExampleWidgets}>Remove example widgets</Button>
-		<pre style="font-size: 0.8em;">{stringifyConfiguration(screen)}</pre>
+		<textarea bind:this={configWindow} class='configWindow' />
 	{:else}
 		<h1>Screen does not exist.</h1>
 	{/if}
@@ -96,5 +106,10 @@
 		width: 100vw;
 		height: 100vh;
 		padding: 20px;
+	}
+	.configWindow {
+		font-size: 0.8em;
+		width: 50%;
+		height: 50%;
 	}
 </style>

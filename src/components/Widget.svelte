@@ -3,12 +3,14 @@
 	import { onMount } from 'svelte';
 	import { renderTemplate } from '../templateRenderer';
 	import { request } from '../webRequest';
-	import type { WidgetConfig } from '../widget';
+	import type { Action, WidgetConfig } from '../widget';
 
 	const defaultIcon = 'fa fa-info-circle';
 
 	export let config: WidgetConfig;
 	export let theme: 'light' | 'dark' = 'dark';
+
+	let iframe: HTMLIFrameElement = null;
 
 	let data = {};
 	if (config.data) {
@@ -83,17 +85,28 @@
 		return text;
 	}
 
-	function dispatchAction() {
-		if (config.action?.type === 'webhook') {
+	function dispatchAction(action: Action) {
+		if (action.type === 'multi') {
+			action.steps.forEach(dispatchAction);
+		} else if (action.type === 'webhook') {
 			publishData({
-				url: config.action.url,
-				authToken: config.action.authToken,
-				method: config.action.method,
-				payload: renderTemplate(config.action.payload_template, data)
+				url: action.url,
+				authToken: action.authToken,
+				method: action.method,
+				payload: renderTemplate(action.payload_template, data)
 			});
-			console.log('dispatching action', config.action.url);
+			console.log('dispatching action', action.url);
+		} else if (action?.type === 'iframe-message') {
+			const message = renderTemplate(action.message_template, data);
+			iframe?.contentWindow.postMessage(message, '*');
+			console.log(message);
+		} else if (action?.type === 'data') {
+			Object.entries(action.data).forEach(([key, value]) => {
+				data[key] = renderTemplate(value, data);
+				console.log(data[key]);
+			});
 		} else {
-			console.warn('unknown action type', config.action?.type);
+			console.warn('unknown action type', action);
 		}
 	}
 </script>
@@ -105,7 +118,7 @@
 	tabindex={config.action ? 0 : null}
 	on:keydown={(e) => {
 		if (e.key === 'Enter') {
-			dispatchAction();
+			if (config.action) dispatchAction(config.action);
 		}
 	}}
 >
@@ -134,6 +147,7 @@
 		{:else if config.content?.type === 'iframe'}
 			<div class="media">
 				<iframe
+					bind:this={iframe}
 					frameBorder="0"
 					allowtransparency
 					allow="encrypted-media"

@@ -9,7 +9,7 @@ export type WidgetConfig = {
 		interval?: number;
 	};
 	// initial data; will be overwritten, if a source is set
-	data?: { [key: string]: any };
+	data?: { [key: string]: string };
 	primary_template: string;
 	secondary_template?: string;
 	// template for icons (font awesome)
@@ -19,12 +19,27 @@ export type WidgetConfig = {
 		type: 'text' | 'image' | 'iframe';
 		payload_template: string;
 	};
-	action?: {
-		type: 'webhook';
-		url: string;
-		method?: 'GET' | 'POST';
-		payload_template?: string;
-		// optional auth token, for fetching data from private resources
-		authToken?: string;
-	};
+	action?: Action;
 };
+
+export type Action =
+	| {
+			type: 'webhook';
+			url: string;
+			method?: 'GET' | 'POST';
+			payload_template?: string;
+			// optional auth token, for fetching data from private resources
+			authToken?: string;
+	  }
+	| {
+			type: 'iframe-message';
+			message_template: string;
+	  }
+	| {
+			type: 'data';
+			data: { [key: string]: string };
+	  }
+	| {
+			type: 'multi';
+			steps: Action[];
+	  };

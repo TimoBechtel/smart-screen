@@ -67,5 +67,62 @@ export const exampleWidgets: ExampleWidget[] = [
 				url: 'https://api.coincap.io/v2/assets/bitcoin'
 			}
 		}
+	},
+	{
+		name: 'Note',
+		config: {
+			icon_template: 'fas fa-sticky-note',
+			primary_template: 'Note:',
+			content: {
+				type: 'text',
+				payload_template: 'This background image is just a random one from unsplash.'
+			}
+		}
+	},
+	{
+		name: 'Test',
+		config: {
+			primary_template: 'Counter',
+			secondary_template: '{{ count }}',
+			data: {
+				count: '0'
+			},
+			action: {
+				type: 'data',
+				data: {
+					count: '{{ count | plus: 1 }}'
+				}
+			}
+		}
+	},
+	{
+		name: 'Youtube',
+		config: {
+			primary_template: 'YoutubeVideo',
+			content: {
+				type: 'iframe',
+				payload_template:
+					'https://www.youtube.com/embed/5qap5aO4i9A?controls=0&enablejsapi=1&autoplay=0'
+			},
+			data: {
+				playing: 'false'
+			},
+			action: {
+				type: 'multi',
+				steps: [
+					{
+						type: 'iframe-message',
+						message_template:
+							'{ "event": "command", "func": "{% if playing == "false" %}playVideo{% else %}pauseVideo{% endif %}" }'
+					},
+					{
+						type: 'data',
+						data: {
+							playing: '{% if playing == "false" %}true{% else %}false{% endif %}'
+						}
+					}
+				]
+			}
+		}
 	}
 ];

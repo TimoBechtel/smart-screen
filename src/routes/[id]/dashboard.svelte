@@ -145,7 +145,7 @@
 			</h1>
 			<div class="widget-container">
 				<div class="left-widgets">
-					{#each screen.scenes[currentSceneIndex]?.widgets as widget}
+					{#each screen.scenes[currentSceneIndex]?.widgets as widget (JSON.stringify(widget))}
 						<div transition:fade={{ duration: 250 }}>
 							<Widget config={widget} />
 						</div>

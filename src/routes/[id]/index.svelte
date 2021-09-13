@@ -1,11 +1,12 @@
 <script context="module" lang="ts">
 	import type { LoadInput, LoadOutput } from '@sveltejs/kit';
 	import type { ChainReference } from 'socketdb/browser';
+import type { WidgetConfig } from 'src/widget';
 	import { onMount } from 'svelte';
 	import yaml from 'yaml';
 	import Button from '../../components/Button.svelte';
 	import { exampleWidgets } from '../../examples/widgets';
-	import type { ScreenConfiguration } from '../../screen';
+	import type { Scene, ScreenConfiguration } from '../../screen';
 
 	export async function load({ page }: LoadInput): Promise<LoadOutput> {
 		// get the id of the screen (the last part of the url)
@@ -35,8 +36,12 @@
 
 	let screen: ScreenConfiguration = null;
 
-	let configWindow;
+	let selectedScene = 0;
 	let shown = false;
+	let configValue = '';
+	$:{
+		configValue = loadScene(selectedScene)
+	} 
 
 	onMount(async () => {
 		// we need to dynamically load this module on mount, because we cannot load it on the server side
@@ -48,57 +53,65 @@
 			// merge changes from the server with the local state whenever someone updates it
 			if (data) {
 				screen = { ...screen, ...data };
+				configValue = loadScene(selectedScene)
 			}
 		});
 	});
 
-	function parseConfiguration(yamlString: string): ScreenConfiguration {
+	function parseConfiguration(yamlString: string): Scene {
 		return yaml.parse(yamlString);
 	}
+	function save() {
+		screen.scenes[selectedScene] = parseConfiguration(configValue)
+		store.set(screen)
 
-	function stringifyConfiguration(screen: ScreenConfiguration): string {
+	}
+	function loadScene(scene) {
+		return screen?.scenes ? stringifyConfiguration(screen.scenes[scene]): 'loading';
+	}
+
+	function stringifyConfiguration(screen: Scene): string {
 		return yaml.stringify(screen);
 	}
 
-	// a few demo functions that just add/remove example widgets to the scene 1
-	function setExampleWidgets() {
-		screen.scenes[0].widgets = exampleWidgets.map((example) => example.config);
-		screen.scenes[1].widgets = [exampleWidgets[0].config];
-		screen.scenes[2].widgets = [exampleWidgets[2].config];
-		screen.scenes[0].background.color = 'black';
-		screen.scenes[0].background.imageSrc =
-			'https://source.unsplash.com/random/?dark,neon?r=' + Math.random();
-		screen.scenes[1].background.imageSrc =
-			'https://source.unsplash.com/random/?dark,cafe?r=' + Math.random();
-		screen.scenes[2].background.imageSrc =
-			'https://source.unsplash.com/random/?dark,plants?r=' + Math.random();
-		configWindow.value = stringifyConfiguration(screen)
+	function addExampleWidget(name) {
+		// still need help with types :)
+		let exampleWidget: any = exampleWidgets.find((example) => example.name == name);
+		screen.scenes[selectedScene].widgets.push(exampleWidget.config);
 		store.set(screen);
 	}
+	
 	function removeExampleWidgets() {
-		screen.scenes[0].widgets = [];
-		configWindow.value = stringifyConfiguration(screen)
-		store.set(screen);
+		screen.scenes[selectedScene].widgets = [];
+		store.set(screen)
 	}
 </script>
 
 <main>
 	{#if screen}
-		<h1>Configure {screen.name}</h1>
+	<h1>Configure {screen.name}</h1>
+	<label>Screen Name: <input type='text' bind:value={screen.name}></label>
+		
 		<div class='exampleWrapper'>
 			<button on:click={() => shown = !shown}>Show</button>
 			{#if shown}
 				{#each exampleWidgets as example}
 				<div id={example.name}>
 					{example.name}
-					<button class='tryOut'>Add</button>
+					<button on:click={() => {addExampleWidget(example.name)}} class='tryOut'>Add</button>
 				</div>
 				{/each}
 			{/if}
 		</div>
-		<Button on:click={setExampleWidgets}>Add example widgets</Button>
+		{selectedScene}
+		<select bind:value={selectedScene}>
+			{#each screen.scenes as scene, index}
+				<option value={index}>{scene.name}</option>
+			{/each}
+		</select>
 		<Button on:click={removeExampleWidgets}>Remove example widgets</Button>
-		<textarea bind:this={configWindow} class='configWindow' />
+		<textarea bind:value={configValue} class='configWindow' />
+		<Button on:click={save}>Save</Button>
 	{:else}
 		<h1>Screen does not exist.</h1>
 	{/if}

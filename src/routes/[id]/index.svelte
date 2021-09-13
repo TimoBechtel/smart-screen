@@ -28,7 +28,6 @@
 	 * as we do not need the id to be apparent in the url
 	 */
 
-
 	export let id: string;
 
 	// socketdb store, for synchonizing the screen configuration with the server
@@ -37,6 +36,7 @@
 	let screen: ScreenConfiguration = null;
 
 	let configWindow;
+	let shown = false;
 
 	onMount(async () => {
 		// we need to dynamically load this module on mount, because we cannot load it on the server side
@@ -85,11 +85,17 @@
 <main>
 	{#if screen}
 		<h1>Configure {screen.name}</h1>
-		<select>
-			{#each exampleWidgets as example}
-				<option value={example.name}>{example.name}</option>
-			{/each}
-		</select>
+		<div class='exampleWrapper'>
+			<button on:click={() => shown = !shown}>Show</button>
+			{#if shown}
+				{#each exampleWidgets as example}
+				<div id={example.name}>
+					{example.name}
+					<button class='tryOut'>Add</button>
+				</div>
+				{/each}
+			{/if}
+		</div>
 		<Button on:click={setExampleWidgets}>Add example widgets</Button>
 		<Button on:click={removeExampleWidgets}>Remove example widgets</Button>
 		<textarea bind:this={configWindow} class='configWindow' />

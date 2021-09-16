@@ -147,6 +147,7 @@
 		{:else if config.content?.type === 'iframe'}
 			<div class="media">
 				<iframe
+					tabindex="-1"
 					bind:this={iframe}
 					frameBorder="0"
 					allowtransparency

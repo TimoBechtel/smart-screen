@@ -1,8 +1,8 @@
-# Smart / Mirror.. Something.. - SMS
+# Smart Screen
 
 ## About
 
-This is a hackable smart dashboard / display / screen, something (SMS).
+This is a hackable smart screen that displays information from third party sources and allows you to interact with third party services.
 
 ### Set up a display
 
@@ -10,19 +10,53 @@ This is a hackable smart dashboard / display / screen, something (SMS).
 
    - a monitor
    - a camera
-   - a computer (e.g. a raspberry pi)
+   - a computer running either Linux, MacOS or Windows (e.g. a raspberry pi)
    - optionally: hardware buttons that emulate following keys: "ArrowLeft", "ArrowRight", "Tab", "Shift+Tab", "1", "2", ...
 
 2. Setup a SocketDB server (probably not on the same machine)
    See: <https://timobechtel.github.io/socketdb/guide/quick-start.html#setup-server>
 
-3. Run this software on the computer
+3. Run the software in this repo on the computer
 
-   1. Build the website: `yarn build`
-   2. Then start the server: `node build`
+   1. Make sure you have NodeJS installed. (see: <https://nodejs.org/>)
+      For the Raspberry Pi, the easiest way is to use nvm: <https://github.com/nvm-sh/nvm>
+      `nvm install node`
+   2. Make sure you have yarn installed: `npm install --global yarn`
+   3. Build the website: `yarn build`
+   4. Then start the server: `node build`
 
-4. Go to <http://localhost:3000/1/dashboard>
-   (1 can be replaced with any number you want)
+4. Run it as a service (optional)  
+   You may want to run it as a service whenever your computer (e.g. Raspberry PI) boots. For this you can use pm2:
+
+   1. Install: `npm i -g pm2`
+   2. Initialize a startup configuration: `pm2 startup`
+   3. Start the dashboard as a service: `pm2 start build/index.js --name dashboard`
+   4. Save currently running services to restore on the next boot: `pm2 save`
+
+5. Go to <http://localhost:3000/[YOUR_SCREEN_ID]/dashboard>
+   (`[YOUR_SCREEN_ID]` can be replaced with any number you want)
+
+6. Launch Chrome on boot in kiosk mode (optional)  
+   We've set up our Raspberry Pi to launch into a Chrome instance running in kiosk mode.  
+   To do this, add `@chromium-browser --kiosk http://localhost:3000/YOUR_SCREEN_ID/dashboard` to `~/.config/lxsession/LXDE-pi/autostart` (create if not existent)
+
+7. Connect hardware buttons (optional)  
+   For a better user experience (or when running without a mouse and keyboard) you can add push buttons to the GPIO pins on the Raspberry PI.
+
+   Checkout this tutorial on how to connect a button to a Raspberry PI: <https://raspberrypihq.com/use-a-push-button-with-raspberry-pi-gpio/>
+
+8. Map Hardware Buttons to Keys (optional)
+   To control the SmartScreen with hardware buttons, you can map these to keyboard events.
+   When the button is connected to the 3.3V pin, active_low has to be set to 1, otherwise 0.
+   Also make sure to set the initial state (gpio_pull=down, when active_low=1, otherwise =up).
+
+   Add this to `/boot/config.txt`:
+
+   ```
+   dtoverlay=gpio-key,gpio=14,active_low=1,gpio_pull=down,keycode=15
+   dtoverlay=gpio-key,gpio=15,active_low=1,gpio_pull=down,keycode=28
+   dtoverlay=gpio-key,gpio=18,active_low=1,gpio_pull=down,keycode=106
+   ```
 
 ### Usage
 
@@ -40,7 +74,7 @@ Use `Tab`/`Shift+Tab` to select widgets and press enter to trigger widget specif
 
 ### Configure a display
 
-1. Scan the QR code or go to <http://YOURSERVERADDRESS:PORT/1> (`1` can be replaced by your screen id)
+1. Scan the QR code or go to <http://YOURSERVERADDRESS:PORT/[YOUR_SCREEN_ID]> (`[YOUR_SCREEN_ID]` can be replaced by your screen id)
 
 2. Configure widgets using yaml or choose a template (see: 'Create your own widgets')
 

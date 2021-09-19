@@ -70,13 +70,13 @@ Use `ArrowLeft`/`ArrowRight` or the number keys to switch between profiles ('sce
 
 #### Actions
 
-Use `Tab`/`Shift+Tab` to select widgets and press enter to trigger widget specific actions (see: 'Create your own widgets');
+Use `Tab`/`Shift+Tab` to select widgets and press enter to trigger widget specific actions (see: [Create your own widgets](#create-your-own-widgets));
 
 ### Configure a display
 
 1. Scan the QR code or go to <http://YOURSERVERADDRESS:PORT/[YOUR_SCREEN_ID]> (`[YOUR_SCREEN_ID]` can be replaced by your screen id)
 
-2. Configure widgets using yaml or choose a template (see: 'Create your own widgets')
+2. Configure widgets using yaml or choose a template (see: [Create your own widgets](#create-your-own-widgets))
 
 ### Create your own widgets
 
@@ -137,18 +137,18 @@ Properties are overwritten when fetched from a source. You can use this for init
 
 ##### `primary_template` string
 
-Template for the primary text / title of a widget. See section: "Templates"
+Template for the primary text / title of a widget. See section: [Templates](#templates)
 
 ##### `secondary_template` string, _optional_
 
-Template for the secondary text of a widget. See section: "Templates"
+Template for the secondary text of a widget. See section: [Templates](#templates)
 
 ##### `icon_template` string, _optional_
 
 Template that generates the icon name. This need to be rendered to a Font Awesome icon name, e.g. `fas fa-coffee`.
 You can find all available icons [here](https://fontawesome.com/v5.15/icons?d=gallery&p=2&m=free).
 
-Also see section: "Templates"
+Also see section: [Templates](#templates)
 
 ##### `content` _optional_
 
@@ -160,7 +160,7 @@ Also see section: "Templates"
 ```
 
 Additional text or media content for widgets. Adding this will increase the size of the widget automatically.
-`payload_template` will be rendered, see section: "Templates".
+`payload_template` will be rendered, see section: [Templates](#templates).
 
 For `type = 'image'`, `payload_template` needs to be a url pointing to an image.
 
@@ -168,7 +168,7 @@ For `type = 'iframe'`, `payload_template` needs to be a url to a website to embe
 
 ##### `action` _optional_
 
-Actions that are triggered when a widget is activated (see: "Usage"-"Actions")
+Actions that are triggered when a widget is activated (see: [Actions](#actions))
 
 Available actions:
 
@@ -187,7 +187,41 @@ Available actions:
 
   Triggers a webhook.
 
-  `payload_template` is rendered (see: "Templates") and will be submitted as payload.
+  `payload_template` is rendered (see: [Templates](#templates)) and will be submitted as payload.
+
+- `data`:
+
+  ```ts
+  {
+     type: 'data';
+     data: { [key: string]: string };
+  }
+  ```
+
+  Allows you to manipulate values inside the data store. Values have to be strings and are rendered as templates (see: [Templates](#templates)).
+
+- `iframe-message`:
+
+  ```ts
+  {
+  	type: 'iframe-message';
+  	message_template: string;
+  }
+  ```
+
+  Allows you to send messages to an iframe (when content is set to an iframe). Message will be rendered.
+  Example message for youtube videos: `{ "event": "command", "func": "playVideo" }`
+
+- `multi`:
+
+  ```ts
+  {
+     type: 'multi';
+     steps: Action[];
+  }
+  ```
+
+  Allows you to define multiple actions, that are executed in the order you define them. (Action can be anything above)
 
 #### Examples (as yaml):
 
